@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Add your meta tags, title, and stylesheets here -->
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <title>E-Ticaret Sitesi | Ana Sayfa</title>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-title mx-3 display-5">E-Ticaret Sitesi</div>
+    <div class="cart-icon mx-3" id="cartIcon">
+      <img id="shopping-basket" src="assets/shopping-basket.png" alt="Cart Icon">
+      <div class="cart-count" id="cartCount">0</div>
+    </div>
+  </nav>
+
+  <div class="container" id="productContainer">
+    <!-- Product cards will be dynamically added here -->
+  </div>
+
+  <div class="cart-container" id="cartContainer">
+    <div class="shopping-cart">
+      <!-- Cart items will be dynamically added here -->
+    </div>
+    <button class="go-to-cart-btn btn btn-success" onclick="goToCart()">Go to Cart</button>
+  </div>
+  
+  <script>
+    // Function to redirect to cart.html with cart items as query parameter
+// Function to display items on the page
+    function displayItems(items) {
+      const productContainer = document.getElementById('productContainer');
+
+      items.forEach((item) => {
+        const productCard = document.createElement('div');
+        productCard.classList.add('card');
+        productCard.innerHTML = `
+          <div class="card-body">
+            <img src="${item.thumbnail}" alt="${item.title}" class="product-thumbnail">
+            <h5 class="card-title">${item.title}</h5>
+            <p class="card-text">${item.description}</p>
+            <p class="card-price">$${item.price}</p>
+            <button class="btn btn-primary add-to-cart-btn" onclick="addToCart('${item.id}')">Add to Cart</button>
+            <!-- Close button for each product -->
+            <span class="close-btn" onclick="removeCartItem('${item.id}')">&times;</span>
+          </div>
+        `;
+        productContainer.appendChild(productCard);
+      });
+    }
+
+    // ... (existing code)
+
+    // Function to get cart items from localStorage
+    function getCartItems() {
+      const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+      return cartItems;
+    }
+
+    // Function to load cart items from localStorage on page load
+    function loadCartItems() {
+      const cartItems = getCartItems();
+      displayItems(cartItems);
+    }
+
+    // Fetch items from the API and display them on the page
+    fetch('https://dummyjson.com/products')
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data.products)) {
+          products = data.products;
+          updateCartCount(); // Update cart count before displaying products
+          displayItems(products);
+          initializeCartCount(); // Initialize cart count on page load
+          loadCartItems(); // Load cart items from localStorage
+        } else {
+          console.error('Products data is not an array.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+
+    function goToCart() {
+      const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+      const productTitles = cartItems.map(item => encodeURIComponent(item.title)).join(',');
+      window.location.href = `cart.html?items=${productTitles}`;
+    }
+  </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</body>
+</html>
