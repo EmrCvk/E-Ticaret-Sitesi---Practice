@@ -123,7 +123,7 @@ function addToCart(productId) {
 function updateCartCount() {
   const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
   const cartCount = document.getElementById('cartCount');
-  const totalCount = cartItems.reduce((total, item) => total + item.quantity - 1, 0);
+  const totalCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   cartCount.innerText = totalCount;
 
   // Update the cart count in local storage
